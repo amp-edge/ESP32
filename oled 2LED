@@ -1,0 +1,19 @@
+const int led1 = 2;   // GPIO2
+const int led2 = 4;   // GPIO4
+
+void setup() {
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+}
+
+void loop() {
+  // Both LEDs ON
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, HIGH);
+  delay(500);
+
+  // Both LEDs OFF
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  delay(500);
+}
