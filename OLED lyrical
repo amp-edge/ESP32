@@ -1,0 +1,93 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// Replace these with your own original lyrics
+const char* lyrics[] = {
+  "Amp Edge",
+  "Subscribe",
+  "Amp Edge",
+  "Subscribe",
+};
+
+const int totalLines = sizeof(lyrics) / sizeof(lyrics[0]);
+
+int currentLine = 0;
+float scrollY = SCREEN_HEIGHT;
+
+unsigned long previousFrame = 0;
+const int frameDelay = 20;      // ~50 FPS
+
+void setup() {
+
+  Wire.begin(21,22);
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C))
+    while(1);
+
+  display.clearDisplay();
+}
+
+void drawLyrics()
+{
+  display.clearDisplay();
+
+  display.setTextColor(SSD1306_WHITE);
+
+  // Previous line
+  if(currentLine > 0)
+  {
+    display.setTextSize(1);
+    display.setCursor(0, scrollY-16);
+    display.print(lyrics[currentLine-1]);
+  }
+
+  // Current line (Highlighted)
+  display.setTextSize(2);
+  display.setCursor(0, scrollY);
+  display.print(lyrics[currentLine]);
+
+  // Next line
+  if(currentLine < totalLines-1)
+  {
+    display.setTextSize(1);
+    display.setCursor(0, scrollY+22);
+    display.print(lyrics[currentLine+1]);
+  }
+
+  display.display();
+}
+
+void loop()
+{
+  unsigned long now = millis();
+
+  if(now-previousFrame >= frameDelay)
+  {
+    previousFrame = now;
+
+    drawLyrics();
+
+    scrollY--;
+
+    if(scrollY <= 20)
+    {
+      delay(800);       // Pause like karaoke
+
+      currentLine++;
+
+      if(currentLine >= totalLines)
+      {
+        currentLine = 0;
+      }
+
+      scrollY = SCREEN_HEIGHT;
+    }
+  }
+}
