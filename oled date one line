@@ -1,0 +1,67 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+void drawMoon(int x, int y, int r)
+{
+  // Moon
+  display.fillCircle(x, y, r, SSD1306_WHITE);
+
+  // Craters
+  display.fillCircle(x-6, y-4, 2, SSD1306_BLACK);
+  display.fillCircle(x+5, y-2, 2, SSD1306_BLACK);
+  display.fillCircle(x-3, y+5, 2, SSD1306_BLACK);
+}
+
+void setup()
+{
+  Wire.begin(21,22);
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C))
+  {
+    while(true);
+  }
+
+  display.clearDisplay();
+
+  // Draw moon
+  drawMoon(64, 15, 10);
+
+  // FULL MOON
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(6,30);
+  display.print("FULL");
+
+  display.setCursor(12,50);
+  display.print("MOON");
+
+  display.display();
+
+  delay(3000);
+
+  // Second screen
+  display.clearDisplay();
+
+  drawMoon(64,15,10);
+
+  display.setTextSize(2);
+  display.setCursor(8,35);
+  display.print("29 JUL");
+
+  display.setTextSize(1);
+  display.setCursor(45,56);
+  display.print("2026");
+
+  display.display();
+}
+
+void loop()
+{
+}
