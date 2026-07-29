@@ -1,0 +1,82 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+void drawTrophy(int x, int y)
+{
+  // Cup
+  display.drawRoundRect(x+12, y, 16, 18, 4, SSD1306_WHITE);
+
+  // Handles
+  display.drawCircle(x+8, y+8, 4, SSD1306_WHITE);
+  display.drawCircle(x+32, y+8, 4, SSD1306_WHITE);
+
+  // Stem
+  display.fillRect(x+18, y+18, 4, 8, SSD1306_WHITE);
+
+  // Base
+  display.fillRoundRect(x+14, y+26, 12, 4, 2, SSD1306_WHITE);
+  display.fillRoundRect(x+10, y+31, 20, 5, 2, SSD1306_WHITE);
+
+  // Ball on top
+  display.fillCircle(x+20, y-3, 3, SSD1306_WHITE);
+}
+
+void setup() {
+
+  Wire.begin(21,22);
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+
+}
+
+void loop() {
+
+  // Trophy grows upward
+  for(int h=0; h<=40; h++)
+  {
+    display.clearDisplay();
+
+    display.drawFastVLine(64, 63-h, h, SSD1306_WHITE);
+
+    if(h>10)
+      drawTrophy(44,18);
+
+    display.display();
+    delay(35);
+  }
+
+  delay(600);
+
+  // Flash effect
+  for(int i=0;i<3;i++)
+  {
+    display.invertDisplay(true);
+    delay(150);
+    display.invertDisplay(false);
+    delay(150);
+  }
+
+  // Final screen
+  display.clearDisplay();
+
+  drawTrophy(44,8);
+
+  display.setTextSize(1);
+  display.setCursor(28,48);
+  display.print("FIFA WORLD CUP");
+
+  display.setTextSize(2);
+  display.setCursor(24,56);
+  display.print("2026");
+
+  display.display();
+
+  delay(4000);
+}
